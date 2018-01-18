@@ -20,6 +20,7 @@ import socket
 import struct
 import logging
 import functools
+import six
 
 TUN_KO_PATH = "/dev/net/tun"
 
@@ -91,7 +92,7 @@ class Tunnel(object):
         self.name = None
         self.fd = None
 
-        if isinstance(self.mode, basestring):
+        if isinstance(self.mode, six.string_types):
             self.mode = self.MODES.get(self.mode, None)
 
             assert self.mode is not None, "%r is not a valid tunnel type." % (self.mode, )
