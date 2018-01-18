@@ -85,7 +85,7 @@ class Tunnel(object):
 
         super(Tunnel, self).__init__()
 
-        self.pattern = pattern
+        self.pattern = bytes(pattern, "ASCII")
         self.mode = mode
         self.no_pi = self.IFF_NO_PI if no_pi else 0x0000
 
@@ -138,6 +138,7 @@ class Tunnel(object):
 
             raise
 
+        ret = ret.decode("utf-8")
         self.name = ret[:16].strip("\x00")
 
         logger.info("Tunnel '%s' opened." % (self.name, ))
