@@ -30,7 +30,7 @@ class Tunnel(object):
 
     class AlreadyOpened(Exception):
         """ Raised when the user try to open a already-opened
-            tunnel. 
+            tunnel.
         """
         pass
 
@@ -39,12 +39,12 @@ class Tunnel(object):
             the good permissions.
         """
         pass
-    
+
     MODES = {
         "tun": 0x0001,
         "tap": 0x0002,
     }
-    
+
     # No packet information flag
     IFF_NO_PI = 0x1000
 
@@ -63,14 +63,14 @@ class Tunnel(object):
         """ Create a new tun/tap tunnel. Its type is defined by the
             argument 'mode', whose value can be either a string or
             the system value.
-            
+
             The argument 'pattern set the string format used to
             generate the name of the future tunnel. By default, for
             Linux, it is "tun%d" or "tap%d" depending on the mode.
-            
+
             If the argument 'auto_open' is true, this constructor
             will automatically create the tunnel.
-            
+
             If the argument 'no_pi' is true, the device will be
             be opened with teh IFF_NO_PI flag. Otherwise, 4 extra
             bytes are added to the beginning of the packet (2 flag
@@ -87,7 +87,7 @@ class Tunnel(object):
         self.pattern = pattern
         self.mode = mode
         self.no_pi = self.IFF_NO_PI if no_pi else 0x0000
-        
+
         self.name = None
         self.fd = None
 
@@ -125,12 +125,12 @@ class Tunnel(object):
 
         logger.debug("Opening %s..." % (TUN_KO_PATH, ))
         self.fd = os.open(TUN_KO_PATH, os.O_RDWR)
-        
+
         logger.debug("Opening %s tunnel '%s'..." % (self.mode_name.upper(), self.pattern, ))
         try:
             ret = fcntl.ioctl(self.fd, self.TUNSETIFF, struct.pack("16sH", self.pattern, self.mode | self.no_pi))
 
-        except IOError, e:
+        except IOError as e:
             if e.errno == 1:
                 logger.error("Cannot open a %s tunnel because the operation is not permitted." % (self.mode_name.upper(), ))
                 raise self.NotPermitted()
@@ -149,7 +149,7 @@ class Tunnel(object):
 
         if self.fd is None:
             return
-            
+
         logger.debug("Closing tunnel '%s'..." % (self.name or "", ))
 
         # Close tun.ko file
@@ -192,7 +192,7 @@ class Tunnel(object):
         fcntl.ioctl(sock, self.SIOCSIFADDR, ifreq)
         ifreq = struct.pack('16sH', self.name, self.IFF_UP|self.IFF_POINTOPOINT|self.IFF_RUNNING|self.IFF_MULTICAST)
         fcntl.ioctl(sock, self.SIOCSIFFLAGS, ifreq)
-        
+
 
     def __repr__(self):
         return "<%s tunnel '%s'>" % (self.mode_name.capitalize(), self.name, )
