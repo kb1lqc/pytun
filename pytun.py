@@ -107,7 +107,7 @@ class Tunnel(object):
     def mode_name(self):
         """ Returns the tunnel mode's name, for printing purpose. """
 
-        for name, id in self.MODES.iteritems():
+        for name, id in six.iteritems(self.MODES):
             if id == self.mode:
                 return name
 
